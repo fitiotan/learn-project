@@ -11,7 +11,7 @@ if (!$userMessage) {
     exit;
 }
 
-$apiKey = "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"; // Never expose this in frontend!
+$apiKey = "this is your api key";
 $url = "https://api.openai.com/v1/chat/completions";
 
 $data = [
