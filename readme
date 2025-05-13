@@ -1,0 +1,2 @@
+open command prompt in current directory, and then 
+composer require vlucas/phpdotenv

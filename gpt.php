@@ -2,6 +2,11 @@
 // chat_api.php
 header('Content-Type: application/json');
 
+// Load Composer autoload and .env
+require __DIR__ . '/vendor/autoload.php';
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv->load();
+
 // Load input
 $input = json_decode(file_get_contents("php://input"), true);
 $userMessage = $input["message"] ?? "";
@@ -59,4 +64,4 @@ $reply = $responseData["choices"][0]["message"]["content"] ?? "無法取得回�
 
 // Return the reply as a JSON object
 echo json_encode(["reply" => $reply]);
-?>\
+?>
