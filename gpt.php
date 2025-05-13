@@ -12,7 +12,7 @@ if (!$userMessage) {
     exit;
 }
 
-// Get API key from environment variable (for security)
+// Get API key from environment variable
 $apiKey = getenv('OPENAI_API_KEY');
 if (!$apiKey) {
     echo json_encode(["reply" => "API金鑰缺失，請稍後再試。"]);
