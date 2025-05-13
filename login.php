@@ -1,5 +1,6 @@
 <?php
     session_start();
+    session_regenerate_id(true); // after successful login
 ?>
 <!DOCTYPE html>
 <html lang="en">

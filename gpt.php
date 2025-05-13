@@ -6,12 +6,19 @@ header('Content-Type: application/json');
 $input = json_decode(file_get_contents("php://input"), true);
 $userMessage = $input["message"] ?? "";
 
+// Check if the user has provided a message
 if (!$userMessage) {
     echo json_encode(["reply" => "請輸入訊息"]);
     exit;
 }
 
-$apiKey = "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"; // Never expose this in frontend!
+// Get API key from environment variable (for security)
+$apiKey = getenv('OPENAI_API_KEY');
+if (!$apiKey) {
+    echo json_encode(["reply" => "API金鑰缺失，請稍後再試。"]);
+    exit;
+}
+
 $url = "https://api.openai.com/v1/chat/completions";
 
 $data = [
@@ -22,17 +29,34 @@ $data = [
     ]
 ];
 
-$options = [
-    "http" => [
-        "method"  => "POST",
-        "header"  => "Content-type: application/json\r\nAuthorization: Bearer $apiKey\r\n",
-        "content" => json_encode($data)
-    ]
+$headers = [
+    "Content-Type: application/json",
+    "Authorization: Bearer $apiKey"
 ];
 
-$context = stream_context_create($options);
-$result = file_get_contents($url, false, $context);
-$response = json_decode($result, true);
+// Initialize cURL
+$ch = curl_init($url);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
-$reply = $response["choices"][0]["message"]["content"] ?? "無法取得回覆，請稍後再試。";
+// Execute cURL request
+$response = curl_exec($ch);
+
+// Check for cURL errors
+if ($response === false) {
+    echo json_encode(["reply" => "API請求失敗：" . curl_error($ch)]);
+    curl_close($ch);
+    exit;
+}
+
+curl_close($ch);
+
+// Parse the API response
+$responseData = json_decode($response, true);
+$reply = $responseData["choices"][0]["message"]["content"] ?? "無法取得回覆，請稍後再試。";
+
+// Return the reply as a JSON object
 echo json_encode(["reply" => $reply]);
+?>\
