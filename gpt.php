@@ -1,5 +1,5 @@
 <?php
-
+// gpt.api
 header('Content-Type: application/json');
 
 // Load Composer autoload and .env
@@ -17,8 +17,8 @@ if (!$userMessage) {
     exit;
 }
 
-// Get API key from environment variable
-$apiKey = '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';
+// Use $_ENV (not getenv) to access values loaded via Dotenv
+$apiKey = $_ENV['OPENAI_API_KEY'] ?? '';
 if (!$apiKey) {
     echo json_encode(value: ["reply" => "API金鑰缺失，請稍後再試。"]);
     exit;
@@ -27,7 +27,7 @@ if (!$apiKey) {
 $url = "https://api.openai.com/v1/chat/completions";
 
 $data = [
-    "model" => "gpt-4.1-mini",
+    "model" => "gpt-4.1-nano", // safer fallback; adjust as needed
     "messages" => [
         ["role" => "system", "content" => "你是一個幫助學生學習的 AI 助理。"],
         ["role" => "user", "content" => $userMessage]

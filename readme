@@ -1,2 +1,3 @@
-open command prompt in current directory, and then 
-composer require vlucas/phpdotenv
+for env:
+    cd C:\xampp\htdocs\learn
+    composer require vlucas/phpdotenv
