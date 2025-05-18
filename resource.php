@@ -57,13 +57,12 @@
                         </li>
                     </ul>
                     <form class="d-flex" method="post">
-                        <button class="btn btn-outline-dark" name="logout" type="submit" value='登出'>
+                        <button class="btn btn-outline-dark" name="logout" type="submit" value="登出">
                             登出
                         </button>
                     </form>
                     <?php
-                        if(isset($_POST["logout"]) == "登出")
-                        {
+                        if (isset($_POST["logout"]) && $_POST["logout"] == "登出") {
                             session_destroy();
                             echo "<script>alert('已登出');location.href='index.php';</script>";
                         }
@@ -185,7 +184,7 @@
                         }
                     }
                 }
-                mysqli_close($link);     
+                mysqli_close($link);
             }
         ?>
                 </div>

@@ -1,29 +1,30 @@
 <?php
-
 header('Content-Type: application/json');
 
-// Load Composer autoload and .env
 require __DIR__ . '/vendor/autoload.php';
+
+// Load environment variables
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 
-// Load input
+// Get user input
 $input = json_decode(file_get_contents("php://input"), true);
 $userMessage = $input["message"] ?? "";
 
-// Check if the user has provided a message
+// Validate input
 if (!$userMessage) {
     echo json_encode(["reply" => "請輸入訊息"]);
     exit;
 }
 
-// Use $_ENV (not getenv) to access values loaded via Dotenv
+// Get API key
 $apiKey = $_ENV['OPENAI_API_KEY'] ?? '';
 if (!$apiKey) {
-    echo json_encode(value: ["reply" => "API金鑰缺失，請稍後再試。"]);
+    echo json_encode(["reply" => "API金鑰缺失，請稍後再試。"]);
     exit;
 }
 
+// Set up API call
 $url = "https://api.openai.com/v1/chat/completions";
 
 $data = [
@@ -39,17 +40,15 @@ $headers = [
     "Authorization: Bearer $apiKey"
 ];
 
-// Initialize cURL
+// Make request
 $ch = curl_init($url);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_POST, true);
 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
 curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
-// Execute cURL request
 $response = curl_exec($ch);
 
-// Check for cURL errors
 if ($response === false) {
     echo json_encode(["reply" => "API請求失敗：" . curl_error($ch)]);
     curl_close($ch);
@@ -58,10 +57,10 @@ if ($response === false) {
 
 curl_close($ch);
 
-// Parse the API response
+// Parse response
 $responseData = json_decode($response, true);
 $reply = $responseData["choices"][0]["message"]["content"] ?? "無法取得回覆，請稍後再試。";
 
-// Return the reply as a JSON object
+// Return JSON
 echo json_encode(["reply" => $reply]);
 ?>

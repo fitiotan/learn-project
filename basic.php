@@ -1,8 +1,11 @@
 <?php
     session_start();
+    if (!isset($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-Hant">
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
@@ -48,14 +51,19 @@
                         </li>
                     </ul>
                     <form class="d-flex" method="post">
+                        <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                         <button class="btn btn-outline-dark" name="logout" type="submit" value="登出">
                             登出
                         </button>
                     </form>
                     <?php
                         if (isset($_POST["logout"])) {
-                            session_destroy();
-                            echo "<script>alert('已登出');location.href='index.php';</script>";
+                            if (hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+                                session_destroy();
+                                echo "<script>alert('已登出');location.href='index.php';</script>";
+                            } else {
+                                echo "<script>alert('CSRF 驗證失敗');</script>";
+                            }
                         }
                     ?>
                 </div>
@@ -79,33 +87,44 @@
                     if (!isset($_SESSION["account"])) {
                         echo "<script>alert('請先登入帳號');location.href='login.php';</script>";
                     } else {
-                        $link = @mysqli_connect('127.0.0.1', 'root', '', 'learn');
-                        if (!$link) {
-                            echo "資料庫連線錯誤";
-                        } else {
-                            $stmt = $link->prepare("SELECT * FROM `user` WHERE `account` = ?");
-                            $stmt->bind_param("s", $_SESSION["account"]);
-                            $stmt->execute();
-                            $result = $stmt->get_result();
-                            if ($row = mysqli_fetch_assoc($result)) {
-                                echo "<table border='0' width='100%'><tr>";
-                                echo "<td align='left'>";
-                                echo "<img src='" . htmlspecialchars($row["photo"]) . "' alt='User photo' width='350' height='350'>";
-                                echo "</td>";
-                                echo "<td align='center'>";
-                                echo "<p class='fs-5'>姓名：" . htmlspecialchars($row["name"]) . "</p><br>";
-                                echo "<p class='fs-5'>帳號：" . htmlspecialchars($_SESSION["account"]) . "</p><br>";
-                                echo "<p class='fs-5'>身分證字號：" . htmlspecialchars($row["identity"]) . "</p><br>";
-                                echo "</td>";
-                                echo "<td align='center'>";
-                                echo "<p class='fs-5'>性別：" . htmlspecialchars($row["gender"]) . "</p><br>";
-                                echo "<p class='fs-5'>手機：" . htmlspecialchars($row["phone"]) . "</p><br>";
-                                echo "<p class='fs-5'>信箱：" . htmlspecialchars($row["email"]) . "</p><br>";
-                                echo "</td>";
-                                echo "</tr></table>";
-                            }
+                        $mysqli = new mysqli('127.0.0.1', 'root', '', 'learn');
+                        if ($mysqli->connect_error) {
+                            die("資料庫連線錯誤：" . $mysqli->connect_error);
                         }
-                        mysqli_close($link);
+                        $stmt = $mysqli->prepare("SELECT * FROM `user` WHERE `account` = ?");
+                        $stmt->bind_param("s", $_SESSION["account"]);
+                        $stmt->execute();
+                        $result = $stmt->get_result();
+                        if ($row = $result->fetch_assoc()) {
+                            $photo = htmlspecialchars($row["photo"]);
+                            $name = htmlspecialchars($row["name"]);
+                            $identity = htmlspecialchars($row["identity"]);
+                            $gender = htmlspecialchars($row["gender"]);
+                            $phone = htmlspecialchars($row["phone"]);
+                            $email = htmlspecialchars($row["email"]);
+                            $account = htmlspecialchars($_SESSION["account"]);
+
+                            echo "<table border='0' width='100%'><tr>";
+                            echo "<td align='left'>";
+                            if (!empty($photo) && preg_match('/\\.(jpg|jpeg|png|gif)$/i', $photo)) {
+                                echo "<img src='$photo' alt='User photo' width='350' height='350'>";
+                            } else {
+                                echo "<img src='assets/default.png' alt='No photo' width='350' height='350'>";
+                            }
+                            echo "</td>";
+                            echo "<td align='center'>";
+                            echo "<p class='fs-5'>姓名：$name</p><br>";
+                            echo "<p class='fs-5'>帳號：$account</p><br>";
+                            echo "<p class='fs-5'>身分證字號：$identity</p><br>";
+                            echo "</td>";
+                            echo "<td align='center'>";
+                            echo "<p class='fs-5'>性別：$gender</p><br>";
+                            echo "<p class='fs-5'>手機：$phone</p><br>";
+                            echo "<p class='fs-5'>信箱：$email</p><br>";
+                            echo "</td>";
+                            echo "</tr></table>";
+                        }
+                        $mysqli->close();
                     }
                 ?>
             </div>

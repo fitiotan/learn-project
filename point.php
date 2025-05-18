@@ -1,6 +1,13 @@
 <?php
 session_start();
 
+// Logout handling - must be before any HTML output
+if (isset($_POST["logout"])) {
+    session_destroy();
+    echo "<script>alert('已登出');location.href='index.php';</script>";
+    exit;
+}
+
 // Redirect if not logged in
 if (!isset($_SESSION["account"])) {
     echo "<script>alert('請先登入帳號');location.href='login.php';</script>";
@@ -15,7 +22,7 @@ if (!$link) {
 
 $file_path = "";
 if (isset($_POST["enter"])) {
-    $subject = $_POST["enter"];
+    $subject = mysqli_real_escape_string($link, $_POST["enter"]);
     $sql = "SELECT * FROM `resource` WHERE `subject` = '$subject'";
     $result = mysqli_query($link, $sql);
 
@@ -25,7 +32,7 @@ if (isset($_POST["enter"])) {
         $subject = $row["subject"];
 
         // Record user view
-        $account = $_SESSION["account"];
+        $account = mysqli_real_escape_string($link, $_SESSION["account"]);
         $sql2 = "SELECT * FROM `record_resource` WHERE `account` = '$account' AND `subject` = '$subject'";
         $result2 = mysqli_query($link, $sql2);
 
@@ -34,21 +41,22 @@ if (isset($_POST["enter"])) {
             $times = $row2["times"] + 1;
             $sql3 = "UPDATE `record_resource` SET `times` = '$times' WHERE `account` = '$account' AND `subject` = '$subject'";
         } else {
-            $sql3 = "INSERT INTO `record_resource` (`account`, `class`, `subject`, `times`) VALUES ('$account', '$class', '$subject', '1')";
+            $sql3 = "INSERT INTO `record_resource` (`account`, `class`, `subject`, `times`) VALUES ('$account', '$class', '$subject', 1)";
         }
         mysqli_query($link, $sql3);
     }
 }
+
 mysqli_close($link);
 ?>
 
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" />
     <title>線上學習平台</title>
-    <link rel="stylesheet" href="css/styles.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
     <style>
         body { background-color: #ADD8E6; }
         header { background-color: rgba(0, 0, 0, 0.2); }
@@ -60,23 +68,26 @@ mysqli_close($link);
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container px-4 px-lg-5">
         <a class="navbar-brand">學習系統</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="切換導航">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
                 <li class="nav-item"><a class="nav-link active" href="class.php">首頁</a></li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" data-bs-toggle="dropdown">修改資料</a>
-                    <ul class="dropdown-menu">
+                    <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">修改資料</a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <li><a class="dropdown-item" href="basic.php">基本資料</a></li>
                         <li><a class="dropdown-item" href="contact.php">聯絡資料</a></li>
                         <li><a class="dropdown-item" href="revise.php">修改密碼</a></li>
                     </ul>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" id="navbarDropdown2" href="#" data-bs-toggle="dropdown">課程</a>
-                    <ul class="dropdown-menu">
+                    <a class="nav-link dropdown-toggle" id="navbarDropdown2" href="#" role="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">課程</a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown2">
                         <li><a class="dropdown-item" href="hobby.php">喜好課程</a></li>
                         <li><a class="dropdown-item" href="statistics.php">次數統計</a></li>
                     </ul>
@@ -88,14 +99,6 @@ mysqli_close($link);
         </div>
     </div>
 </nav>
-
-<?php
-// Logout handling
-if (isset($_POST["logout"])) {
-    session_destroy();
-    echo "<script>alert('已登出');location.href='index.php';</script>";
-}
-?>
 
 <!-- Header -->
 <header class="py-2">
@@ -112,10 +115,10 @@ if (isset($_POST["logout"])) {
     <div class="container px-4 px-lg-5 mt-2">
         <button class="btn btn-outline-dark mb-3" onclick="window.location.href='class.php';">上一頁</button>
 
-        <?php if (!empty($file_path) && file_exists($file_path)): 
+        <?php if (!empty($file_path) && file_exists($file_path)):
             $ext = strtolower(pathinfo($file_path, PATHINFO_EXTENSION));
             if ($ext === 'pdf'): ?>
-                <embed src="<?= $file_path ?>" width="100%" height="600px" type="application/pdf">
+                <embed src="<?= htmlspecialchars($file_path) ?>" width="100%" height="600px" type="application/pdf" />
             <?php else: ?>
                 <p>不支持的文件類型。</p>
             <?php endif; ?>
@@ -125,7 +128,6 @@ if (isset($_POST["logout"])) {
     </div>
 </section>
 
-<!-- Chatbot container -->
 <!-- Chatbot UI -->
 <style>
 #chatContainer {
@@ -188,6 +190,6 @@ if (isset($_POST["logout"])) {
     </div>
 </div>
 
-<script src="js\scripts.js"></script>
+<script src="js/scripts.js"></script>
 </body>
 </html>
