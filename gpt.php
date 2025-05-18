@@ -1,5 +1,5 @@
 <?php
-// gpt.api
+
 header('Content-Type: application/json');
 
 // Load Composer autoload and .env
@@ -27,7 +27,7 @@ if (!$apiKey) {
 $url = "https://api.openai.com/v1/chat/completions";
 
 $data = [
-    "model" => "gpt-4.1-nano", // safer fallback; adjust as needed
+    "model" => "gpt-4.1-nano",
     "messages" => [
         ["role" => "system", "content" => "你是一個幫助學生學習的 AI 助理。"],
         ["role" => "user", "content" => $userMessage]
