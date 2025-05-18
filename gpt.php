@@ -20,7 +20,7 @@ if (!$userMessage) {
 // Use $_ENV (not getenv) to access values loaded via Dotenv
 $apiKey = $_ENV['OPENAI_API_KEY'] ?? '';
 if (!$apiKey) {
-    echo json_encode(["reply" => "API金鑰缺失，請稍後再試。"]);
+    echo json_encode(value: ["reply" => "API金鑰缺失，請稍後再試。"]);
     exit;
 }
 
