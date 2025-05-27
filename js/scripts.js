@@ -1,36 +1,35 @@
 // scripts.js
 
 function sendMessage() {
-    const input = document.getElementById("userInput");
-    const message = input.value.trim();
-    if (!message) return;
+    const message = userInput.value.trim();
+    const fileInput = document.getElementById("fileUpload");
+    const file = fileInput.files[0];
 
-    const chatbox = document.getElementById("chatbox");
-    const userMsg = document.createElement("div");
-    userMsg.innerHTML = `<strong>你:</strong> ${message.replace(/\n/g, '<br>')}`;
-    chatbox.appendChild(userMsg);
+    if (!message && !file) return;
+
+    appendMessage("你", message || (file ? `[檔案] ${file.name}` : ""));
+    userInput.value = "";
+
+    const formData = new FormData();
+    formData.append("message", message);
+    if (file) {
+        formData.append("file", file);
+    }
 
     fetch("gpt.php", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: message })
+        body: formData
     })
-    .then(response => response.json())
+    .then(res => res.json())
     .then(data => {
-        const aiMsg = document.createElement("div");
-        aiMsg.innerHTML = `<strong>AI:</strong> ${data.reply || "沒有回應"}`;
-        chatbox.appendChild(aiMsg);
-        chatbox.scrollTop = chatbox.scrollHeight;
+        appendMessage("AI", data.reply || "發生錯誤，請稍後再試。");
+        if (file) {
+            fileInput.value = ""; // clear file input after sending
+        }
     })
-    .catch(() => {
-        const errMsg = document.createElement("div");
-        errMsg.innerHTML = `<strong>AI:</strong> 無法連線到伺服器。`;
-        chatbox.appendChild(errMsg);
-        chatbox.scrollTop = chatbox.scrollHeight;
-    });
-
-    input.value = "";
+    .catch(() => appendMessage("AI", "無法連線到伺服器。"));
 }
+
 
 document.addEventListener("DOMContentLoaded", function() {
     const input = document.getElementById("userInput");
