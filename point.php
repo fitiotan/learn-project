@@ -5,23 +5,13 @@ session_start();
 $link = @mysqli_connect('127.0.0.1', 'root', '', 'learn');
 if (!$link) die("資料庫連線錯誤");
 
-// Handle file upload inside chat (for gpt.php, you may want to handle it there)
-// Here no direct upload handling in this file, since chat uploads via fetch to gpt.php
-
-// Logout handling
-if (isset($_POST["logout"])) {
-    session_destroy();
-    echo "<script>alert('已登出');location.href='index.php';</script>";
-    exit;
-}
-
 // Redirect if not logged in
 if (!isset($_SESSION["account"])) {
     echo "<script>alert('請先登入帳號');location.href='login.php';</script>";
     exit;
 }
 
-// Retrieve resource (unchanged)
+// Retrieve resource file path if requested
 $file_path = "";
 if (isset($_POST["enter"])) {
     $subject = mysqli_real_escape_string($link, $_POST["enter"]);
@@ -53,15 +43,16 @@ mysqli_close($link);
 <head>
     <meta charset="utf-8" />
     <title>線上學習平台</title>
-    <link rel="stylesheet" href="css/styles.css" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
     <style>
-        body { background-color: #ADD8E6; }
-        header { background-color: rgba(0, 0, 0, 0.2); }
-        #mainContainer { display: flex; }
-        #contentArea { flex: 1; padding: 20px; }
+        body { background-color: #ADD8E6; margin: 0; font-family: Arial, sans-serif; }
+        #contentArea { padding: 20px; max-width: 900px; margin: 0 auto; }
+        button.back-btn {
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
 
-        /* Floating chat toggle button */
+        /* Chat styles */
         #chatToggleBtn {
             position: fixed;
             bottom: 20px;
@@ -81,7 +72,6 @@ mysqli_close($link);
             cursor: pointer;
         }
 
-        /* Floating chat container */
         #chatContainer {
             position: fixed;
             bottom: 90px;
@@ -96,11 +86,9 @@ mysqli_close($link);
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
             z-index: 999;
         }
-
         #chatContainer.active {
             display: flex;
         }
-
         #chatbox {
             flex: 1;
             overflow-y: auto;
@@ -109,13 +97,11 @@ mysqli_close($link);
             border-bottom: 1px solid #ccc;
             white-space: pre-wrap;
         }
-
         #chatInputArea {
             display: flex;
             flex-direction: column;
             padding: 10px;
         }
-
         #userInput {
             width: 100%;
             height: 60px;
@@ -124,74 +110,34 @@ mysqli_close($link);
             border: 1px solid #ccc;
             margin-bottom: 5px;
         }
-
         #fileUpload {
             margin-bottom: 5px;
         }
-
         #chatButtons {
             display: flex;
             gap: 5px;
         }
-
         #chatButtons button {
             flex: 1;
+            padding: 8px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container px-4 px-lg-5">
-        <a class="navbar-brand">學習系統</a>
-        <div class="collapse navbar-collapse">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
-                <li class="nav-item"><a class="nav-link active" href="class.php">首頁</a></li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">修改資料</a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="basic.php">基本資料</a></li>
-                        <li><a class="dropdown-item" href="contact.php">聯絡資料</a></li>
-                        <li><a class="dropdown-item" href="revise.php">修改密碼</a></li>
-                    </ul>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">課程</a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="hobby.php">喜好課程</a></li>
-                        <li><a class="dropdown-item" href="statistics.php">次數統計</a></li>
-                    </ul>
-                </li>
-            </ul>
-            <form method="post">
-                <button class="btn btn-outline-dark" name="logout" type="submit">登出</button>
-            </form>
-        </div>
-    </div>
-</nav>
+<div id="contentArea">
+    <button class="back-btn" onclick="window.location.href='class.php';">上一頁</button>
 
-<header class="py-2">
-    <div class="container px-4 px-lg-5 my-2 text-center text-white">
-        <h1 class="display-4 fw-bolder">Shop in style</h1>
-        <p class="lead fw-normal text-white-50 mb-0">With this shop homepage template</p>
-    </div>
-</header>
-
-<div id="mainContainer">
-    <div id="contentArea">
-        <section class="py-2">
-            <button class="btn btn-outline-dark mb-3" onclick="window.location.href='class.php';">上一頁</button>
-            <?php if (!empty($file_path) && file_exists($file_path)): ?>
-                <?php if (strtolower(pathinfo($file_path, PATHINFO_EXTENSION)) === 'pdf'): ?>
-                    <embed src="<?= htmlspecialchars($file_path) ?>" width="100%" height="600px" type="application/pdf" />
-                <?php else: ?>
-                    <p>不支持的文件類型。</p>
-                <?php endif; ?>
-            <?php else: ?>
-                <p>檔案不存在或未選擇資料。</p>
-            <?php endif; ?>
-        </section>
-    </div>
+    <?php if (!empty($file_path) && file_exists($file_path)): ?>
+        <?php if (strtolower(pathinfo($file_path, PATHINFO_EXTENSION)) === 'pdf'): ?>
+            <embed src="<?= htmlspecialchars($file_path) ?>" width="100%" height="600px" type="application/pdf" />
+        <?php else: ?>
+            <p>不支持的文件類型。</p>
+        <?php endif; ?>
+    <?php else: ?>
+        <p>檔案不存在或未選擇資料。</p>
+    <?php endif; ?>
 </div>
 
 <!-- Floating Chat Toggle Button -->

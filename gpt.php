@@ -67,9 +67,15 @@ if ($fileText !== '') {
 }
 
 if ($combinedPrompt === '') {
-    echo json_encode(['error' => '沒有輸入文字或檔案內容']);
-    exit;
+    if ($fileText !== '') {
+        // Automatically summarize the file if there's no user message
+        $combinedPrompt = "請幫我總結以下檔案內容：\n\n" . $fileText;
+    } else {
+        echo json_encode(['error' => '沒有輸入文字或檔案內容']);
+        exit;
+    }
 }
+
 
 // Prepare OpenAI chat request
 $postData = [

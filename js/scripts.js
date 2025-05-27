@@ -1,16 +1,14 @@
-/*!
-* Start Bootstrap - Shop Homepage v5.0.6 (https://startbootstrap.com/template/shop-homepage)
-* Copyright 2013-2023 Start Bootstrap
-* Licensed under MIT (https://github.com/StartBootstrap/startbootstrap-shop-homepage/blob/master/LICENSE)
-*/
+// scripts.js
 
 function sendMessage() {
     const input = document.getElementById("userInput");
-    const message = input.value;
-    if (!message.trim()) return;
+    const message = input.value.trim();
+    if (!message) return;
 
     const chatbox = document.getElementById("chatbox");
-    chatbox.innerHTML += `<div><strong>你:</strong> ${message.replace(/\n/g, '<br>')}</div>`;
+    const userMsg = document.createElement("div");
+    userMsg.innerHTML = `<strong>你:</strong> ${message.replace(/\n/g, '<br>')}`;
+    chatbox.appendChild(userMsg);
 
     fetch("gpt.php", {
         method: "POST",
@@ -19,32 +17,38 @@ function sendMessage() {
     })
     .then(response => response.json())
     .then(data => {
-        chatbox.innerHTML += `<div><strong>AI:</strong> ${data.reply}</div>`;
+        const aiMsg = document.createElement("div");
+        aiMsg.innerHTML = `<strong>AI:</strong> ${data.reply || "沒有回應"}`;
+        chatbox.appendChild(aiMsg);
+        chatbox.scrollTop = chatbox.scrollHeight;
+    })
+    .catch(() => {
+        const errMsg = document.createElement("div");
+        errMsg.innerHTML = `<strong>AI:</strong> 無法連線到伺服器。`;
+        chatbox.appendChild(errMsg);
         chatbox.scrollTop = chatbox.scrollHeight;
     });
 
     input.value = "";
 }
 
-// Enter/Shift+Enter handling
 document.addEventListener("DOMContentLoaded", function() {
     const input = document.getElementById("userInput");
+
     input.addEventListener("keydown", function(event) {
         if (event.key === "Enter") {
-            if (event.shiftKey) {
-                // Allow newline
-                return;
-            } else {
+            if (!event.shiftKey) {
                 event.preventDefault();
                 sendMessage();
             }
         }
     });
 
-    // Expand/collapse toggle
-    const toggleButton = document.getElementById("toggleChatbox");
-    toggleButton.addEventListener("click", function() {
-        const chatContainer = document.getElementById("chatContainer");
-        chatContainer.classList.toggle("expanded");
-    });
+    const toggleButton = document.getElementById("chatToggleBtn");
+    if (toggleButton) {
+        toggleButton.addEventListener("click", function() {
+            const chatContainer = document.getElementById("chatContainer");
+            chatContainer.classList.toggle("active");
+        });
+    }
 });
