@@ -1,3 +1,10 @@
 for env:
     cd C:/xampp/htdocs/learn
     composer require vlucas/phpdotenv
+    composer require phpoffice/phpword
+    composer require phpoffice/phppresentation
+    composer require dompdf/dompdf
+    composer require smalot/pdfparser
+
+in php.ini:
+    remove ; from extension=zip line
