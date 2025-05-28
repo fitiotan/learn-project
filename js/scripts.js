@@ -37,20 +37,36 @@ function sendMessage() {
     input.value = "";
 }
 
-// Handle Enter and Shift+Enter
+// Handle Enter and Shift+Enter & toggle sliding chat
 document.addEventListener("DOMContentLoaded", function() {
     const input = document.getElementById("userInput");
+    const chatContainer = document.getElementById("chatContainer");
+    const toggleButton = document.getElementById("toggleChatButton");
+    const chatbox = document.getElementById("chatbox");
 
+    // Load chat history from sessionStorage
+    let history = JSON.parse(sessionStorage.getItem("chatHistory") || "[]");
+    history.forEach(msg => {
+        const role = msg.role === "user" ? "你" : "AI";
+        chatbox.innerHTML += `<div><strong>${role}:</strong> ${msg.content.replace(/\n/g, "<br>")}</div>`;
+    });
+    chatbox.scrollTop = chatbox.scrollHeight;
+
+    // Send message on Enter (Shift+Enter new line)
     input.addEventListener("keydown", function(event) {
-        if (event.key === "Enter") {
-            if (!event.shiftKey) {
-                event.preventDefault();
-                sendMessage();
-            }
+        if (event.key === "Enter" && !event.shiftKey) {
+            event.preventDefault();
+            sendMessage();
         }
     });
 
-    document.getElementById("toggleChatbox").addEventListener("click", function() {
-        document.getElementById("chatContainer").classList.toggle("expanded");
+    // Toggle chat panel sliding in/out
+    toggleButton.addEventListener("click", () => {
+        if (chatContainer.style.right === "20px") {
+            chatContainer.style.right = "-320px";
+        } else {
+            chatContainer.style.right = "20px";
+            input.focus();
+        }
     });
 });

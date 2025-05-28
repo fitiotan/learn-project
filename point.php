@@ -191,5 +191,25 @@ mysqli_close($link);
 </div>
 
 <script src="js/scripts.js"></script>
+<script>
+  // Clear chat history on page load
+  window.addEventListener('load', () => {
+    const chatbox = document.getElementById('chatbox');
+    if (chatbox) {
+      chatbox.innerHTML = '';  // Clear previous chat messages
+    }
+  });
+
+  // Clear chatbox and localStorage/sessionStorage on page unload (before refresh/close)
+  window.addEventListener('beforeunload', () => {
+    // Clear chat UI (if needed)
+    const chatbox = document.getElementById('chatbox');
+    if (chatbox) chatbox.innerHTML = '';
+
+    // Clear any saved chat history in storage
+    localStorage.removeItem('chatHistory');
+    sessionStorage.removeItem('chatHistory');
+  });
+</script>
 </body>
 </html>
