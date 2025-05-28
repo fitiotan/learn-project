@@ -1,50 +1,56 @@
 /*!
 * Start Bootstrap - Shop Homepage v5.0.6 (https://startbootstrap.com/template/shop-homepage)
-* Copyright 2013-2023 Start Bootstrap
-* Licensed under MIT (https://github.com/StartBootstrap/startbootstrap-shop-homepage/blob/master/LICENSE)
 */
 
 function sendMessage() {
     const input = document.getElementById("userInput");
-    const message = input.value;
-    if (!message.trim()) return;
+    const message = input.value.trim();
+    if (!message) return;
 
     const chatbox = document.getElementById("chatbox");
     chatbox.innerHTML += `<div><strong>你:</strong> ${message.replace(/\n/g, '<br>')}</div>`;
 
+    // Load existing history or start new one
+    let history = JSON.parse(sessionStorage.getItem("chatHistory") || "[]");
+
+    // Add user's message to history
+    history.push({ role: "user", content: message });
+
+    // Send the whole conversation history to the server
     fetch("gpt.php", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: message })
+        body: JSON.stringify({ history: history })
     })
     .then(response => response.json())
     .then(data => {
-        chatbox.innerHTML += `<div><strong>AI:</strong> ${data.reply}</div>`;
+        const reply = data.reply;
+        chatbox.innerHTML += `<div><strong>AI:</strong> ${reply}</div>`;
+
+        // Add AI's reply to history
+        history.push({ role: "assistant", content: reply });
+        sessionStorage.setItem("chatHistory", JSON.stringify(history));
+
         chatbox.scrollTop = chatbox.scrollHeight;
     });
 
     input.value = "";
 }
 
-// Enter/Shift+Enter handling
+// Handle Enter and Shift+Enter
 document.addEventListener("DOMContentLoaded", function() {
     const input = document.getElementById("userInput");
+
     input.addEventListener("keydown", function(event) {
         if (event.key === "Enter") {
-            if (event.shiftKey) {
-                // Allow newline
-                return;
-            } else {
+            if (!event.shiftKey) {
                 event.preventDefault();
                 sendMessage();
             }
         }
     });
 
-    // Expand/collapse toggle
-    const toggleButton = document.getElementById("toggleChatbox");
-    toggleButton.addEventListener("click", function() {
-        const chatContainer = document.getElementById("chatContainer");
-        chatContainer.classList.toggle("expanded");
+    document.getElementById("toggleChatbox").addEventListener("click", function() {
+        document.getElementById("chatContainer").classList.toggle("expanded");
     });
 });

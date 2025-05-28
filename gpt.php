@@ -1,18 +1,16 @@
 <?php
 header('Content-Type: application/json');
-
 require __DIR__ . '/vendor/autoload.php';
 
 // Load environment variables
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 
-// Get user input
+// Get user input (expecting message history)
 $input = json_decode(file_get_contents("php://input"), true);
-$userMessage = $input["message"] ?? "";
+$history = $input["history"] ?? [];
 
-// Validate input
-if (!$userMessage) {
+if (!$history || !is_array($history)) {
     echo json_encode(["reply" => "請輸入訊息"]);
     exit;
 }
@@ -24,15 +22,15 @@ if (!$apiKey) {
     exit;
 }
 
+// Insert system message at the beginning (if not already there)
+array_unshift($history, ["role" => "system", "content" => "你是一個幫助學生學習的 AI 助理。"]);
+
 // Set up API call
 $url = "https://api.openai.com/v1/chat/completions";
 
 $data = [
-    "model" => "gpt-4.1-nano",
-    "messages" => [
-        ["role" => "system", "content" => "你是一個幫助學生學習的 AI 助理。"],
-        ["role" => "user", "content" => $userMessage]
-    ]
+    "model" => "gpt-4.1-nano", // or "gpt-3.5-turbo" if you're not using the new one
+    "messages" => $history
 ];
 
 $headers = [
