@@ -1,50 +1,53 @@
-/*!
-* Start Bootstrap - Shop Homepage v5.0.6 (https://startbootstrap.com/template/shop-homepage)
-* Copyright 2013-2023 Start Bootstrap
-* Licensed under MIT (https://github.com/StartBootstrap/startbootstrap-shop-homepage/blob/master/LICENSE)
-*/
+// scripts.js
 
 function sendMessage() {
-    const input = document.getElementById("userInput");
-    const message = input.value;
-    if (!message.trim()) return;
+    const message = userInput.value.trim();
+    const fileInput = document.getElementById("fileUpload");
+    const file = fileInput.files[0];
 
-    const chatbox = document.getElementById("chatbox");
-    chatbox.innerHTML += `<div><strong>你:</strong> ${message.replace(/\n/g, '<br>')}</div>`;
+    if (!message && !file) return;
+
+    appendMessage("你", message || (file ? `[檔案] ${file.name}` : ""));
+    userInput.value = "";
+
+    const formData = new FormData();
+    formData.append("message", message);
+    if (file) {
+        formData.append("file", file);
+    }
 
     fetch("gpt.php", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: message })
+        body: formData
     })
-    .then(response => response.json())
+    .then(res => res.json())
     .then(data => {
-        chatbox.innerHTML += `<div><strong>AI:</strong> ${data.reply}</div>`;
-        chatbox.scrollTop = chatbox.scrollHeight;
-    });
-
-    input.value = "";
+        appendMessage("AI", data.reply || "發生錯誤，請稍後再試。");
+        if (file) {
+            fileInput.value = ""; // clear file input after sending
+        }
+    })
+    .catch(() => appendMessage("AI", "無法連線到伺服器。"));
 }
 
-// Enter/Shift+Enter handling
+
 document.addEventListener("DOMContentLoaded", function() {
     const input = document.getElementById("userInput");
+
     input.addEventListener("keydown", function(event) {
         if (event.key === "Enter") {
-            if (event.shiftKey) {
-                // Allow newline
-                return;
-            } else {
+            if (!event.shiftKey) {
                 event.preventDefault();
                 sendMessage();
             }
         }
     });
 
-    // Expand/collapse toggle
-    const toggleButton = document.getElementById("toggleChatbox");
-    toggleButton.addEventListener("click", function() {
-        const chatContainer = document.getElementById("chatContainer");
-        chatContainer.classList.toggle("expanded");
-    });
+    const toggleButton = document.getElementById("chatToggleBtn");
+    if (toggleButton) {
+        toggleButton.addEventListener("click", function() {
+            const chatContainer = document.getElementById("chatContainer");
+            chatContainer.classList.toggle("active");
+        });
+    }
 });
