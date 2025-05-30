@@ -46,7 +46,7 @@ session_start();
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" data-bs-toggle="dropdown">課程</a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="hobby.php">喜好課程</a></li>
+                            <li><a class="dropdown-item" href="favorite.php">喜好課程</a></li>
                             <li><a class="dropdown-item" href="statistics.php">次數統計</a></li>
                         </ul>
                     </li>

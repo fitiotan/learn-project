@@ -51,7 +51,7 @@
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">課程</a>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" href="hobby.php">喜好課程</a></li>
+                                <li><a class="dropdown-item" href="favorite.php">喜好課程</a></li>
                                 <li><a class="dropdown-item" href="statistics.php">次數統計</a></li>
                             </ul>
                         </li>
@@ -75,8 +75,7 @@
         <header class="py-2">
             <div class="container px-4 px-lg-5 my-2">
                 <div class="text-center text-white">
-                    <h1 class="display-4 fw-bolder">Shop in style</h1>
-                    <p class="lead fw-normal text-white-50 mb-0">With this shop hompeage template</p>
+                    <h1 class="display-4 fw-bolder">次數統計</h1>
                 </div>
             </div>
         </header>

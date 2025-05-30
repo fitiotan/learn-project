@@ -59,7 +59,7 @@ if (isset($_POST['enter'])) {
                         <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" 
                            data-bs-toggle="dropdown" aria-expanded="false">課程</a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="hobby.php">喜好課程</a></li>
+                            <li><a class="dropdown-item" href="favorite.php">喜好課程</a></li>
                             <li><a class="dropdown-item" href="statistics.php">次數統計</a></li>
                         </ul>
                     </li>
@@ -75,8 +75,8 @@ if (isset($_POST['enter'])) {
     <header class="py-2">
         <div class="container px-4 px-lg-5 my-2">
             <div class="text-center text-black">
-                <h1 class="display-4 fw-bolder">學習風格</h1>
-                <p class="lead fw-normal text-black-50 mb-0">使用這個模板開始您的學習之旅</p>
+                <h1 class="display-4 fw-bolder">歡迎來到互動式學習與練習平台</h1>
+                <p class="lead fw-normal text-black-50 mb-0">今天就開始你的學習之旅吧～</p>
             </div>
         </div>
     </header>

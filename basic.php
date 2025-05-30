@@ -45,7 +45,7 @@
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">課程</a>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" href="hobby.php">喜好課程</a></li>
+                                <li><a class="dropdown-item" href="favorite.php">喜好課程</a></li>
                                 <li><a class="dropdown-item" href="statistics.php">次數統計</a></li>
                             </ul>
                         </li>
@@ -74,8 +74,7 @@
         <header class="py-2">
             <div class="container px-4 px-lg-5 my-2">
                 <div class="text-center text-black">
-                    <h1 class="display-4 fw-bolder">學習系統</h1>
-                    <p class="lead fw-normal text-black-50 mb-0">基本資料</p>
+                    <h1 class="display-4 fw-bolder">基本資料</h1>
                 </div>
             </div>
         </header>
