@@ -223,6 +223,7 @@ mysqli_close($link);
 </div>
 
 <script>
+sessionStorage.removeItem("chatHistory");
 let speechUtterance = null;
 let fullText = '';
 let isPaused = false;
