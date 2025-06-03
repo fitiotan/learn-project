@@ -1,3 +1,105 @@
-for env:
-    cd C:/xampp/htdocs/learn
-    composer require vlucas/phpdotenv
+# Learn Project 🎓💬  
+A lightweight, AI-integrated learning management platform built with PHP, MySQL, and ChatGPT API
+
+## 🔧 Overview
+This project aims to provide a scalable, modular, and user-friendly web application that facilitates online learning. With features such as point logging, progress tracking, and ChatGPT-powered support, the platform is ideal for students and small institutions seeking an intuitive self-learning environment.
+
+## 🧠 Key Features
+- 🔐 **User Authentication** – Secure login/register with session control.
+- 📊 **Learning Tracker** – Log study sessions and monitor your academic progress.
+- 🤖 **ChatGPT AI Assistant** – Built-in conversational AI support using the OpenAI API.
+- 📁 **Modular MVC Architecture** – Clean code organization for maintainability and scalability.
+- 🔒 **Security** – Uses prepared statements to prevent SQL injection and `.env` for sensitive credentials.
+
+## 📂 Project Structure (MVC)
+/app
+/controllers → Handles user and API requests
+/models → Business logic and database operations
+/views → HTML views and frontend templates
+/public
+/css → Stylesheets
+/js → Frontend JS (chatbox, fetch API)
+index.php → Routing entry point
+/config
+config.php → DB config using environment variables
+.env → Hidden credentials file
+/gpt.api → ChatGPT backend handler (via OpenAI API)
+
+shell
+Copy
+Edit
+
+## 🧭 User Flow
+Login/Register ➝ Dashboard ➝ Log Points / View Resources ➝ Track Progress ➝ Ask ChatGPT
+
+markdown
+Copy
+Edit
+
+## 🤝 Dependencies
+- [PHP 8.x](https://www.php.net/)
+- [MySQL](https://www.mysql.com/)
+- [Composer](https://getcomposer.org/) (for dotenv)
+- [OpenAI PHP SDK](https://github.com/openai/openai-php)
+- [XAMPP](https://www.apachefriends.org/) (for local development)
+
+## 🚀 Setup Instructions
+
+1. **Clone the repository**
+```bash
+git clone https://github.com/fitiotan/learn-project.git
+cd learn-project
+Install dependencies
+
+bash
+Copy
+Edit
+composer install
+Set up .env
+
+env
+Copy
+Edit
+DB_HOST=localhost
+DB_NAME=learn_project
+DB_USER=root
+DB_PASS=
+OPENAI_API_KEY=your_openai_api_key_here
+Import the database
+Import the included SQL file into your MySQL database using phpMyAdmin or MySQL CLI.
+
+Run on XAMPP
+Place the project in your XAMPP htdocs/ folder and start Apache & MySQL via the XAMPP Control Panel.
+
+💬 ChatGPT Integration
+The chatbot is implemented using gpt.php, which:
+
+Takes input from a frontend chatbox
+
+Sends a POST request to the OpenAI API
+
+Returns a formatted response to the user interface
+
+📈 Future Improvements
+Admin/Teacher dashboard for content management
+
+Quiz and assignment modules
+
+Gamified rewards (badges, leaderboards)
+
+AI personalization based on course context
+
+Analytics dashboard for teachers/students
+
+📄 License
+This project is open-source and free to use under the MIT License.
+
+Made with ❤️ by Fitio
+
+yaml
+Copy
+Edit
+
+---
+
+Let me know if you'd like to add badges (e.g., build status, license), screenshots, or GIFs.
