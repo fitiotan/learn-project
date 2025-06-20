@@ -28,7 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             echo "<script>alert('帳號已存在');</script>";
         } else {
             // Insert new user
-            $sql = "INSERT INTO user (name, account, password, identity, photo, gender, phone, email) VALUES ('$name', '$account', '$hashed_password', '$identity', '$photo', '$gender', '$phone', '$email')";
+            $sql = "INSERT INTO user (name, account, password, identity, photo, gender, phone, email) VALUES ('$name', '$account', '$password', '$identity', '$photo', '$gender', '$phone', '$email')";
             if (mysqli_query($link, $sql)) {
                 echo "<script>alert('註冊成功！');location.href='login.php';</script>";
                 exit;
